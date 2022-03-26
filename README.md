@@ -25,6 +25,8 @@ Let's try rsrsrs
   - [Installation](#installation)
   - [Basic configurarion](#basic-configurarion)
   - [Making a basic ProtectRoute](#making-a-basic-protectroute)
+  - [Getting parameter from url - useParams](#getting-parameter-from-url---useparams)
+  - [Using links - Link component](#using-links---link-component)
 - [React Toastfy](#react-toastfy)
   - [Install](#install-4)
   - [Example use](#example-use)
@@ -458,6 +460,56 @@ export default function ProtectedRoute(){
     }
 
     return <Outlet />;
+}
+```
+
+## Getting parameter from url - useParams
+
+```js
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Example from './src/Pages/Example';
+
+export default function App(){
+    return (
+        <BrowserRouter>
+            <Routes>    
+                <Route path='/example/:id' element={<Example/>}>
+            </Routes>
+        </BrowserRouter>
+    )
+};
+```
+
+`pages/Example`
+
+```js
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
+export default function Example(){
+    const params = useParams(); // { id: number }
+    const { id } = params;
+
+    return <h1>You have a nice {id} number!</h1>
+}
+```
+
+## Using links - Link component
+
+Use this for linking another pages from your app
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+export default function App(){
+    return (
+        <h1>Links be like</h1>
+        <Link to={'/route'}>
+            Navigate to 'route'
+        </Link>
+    )
 }
 ```
 
