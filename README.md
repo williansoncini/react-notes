@@ -16,14 +16,14 @@ Let's try rsrsrs
 - [Eslint + Prettier](#eslint--prettier)
   - [Install](#install-2)
   - [Init](#init)
-  - [Config file](#config-file)
+  - [Example config file](#example-config-file)
   - [Prettier configuration](#prettier-configuration)
 - [Styled components](#styled-components)
   - [Install](#install-3)
   - [Styling with styled](#styling-with-styled)
 - [React Router Dom](#react-router-dom)
   - [Installation](#installation)
-  - [Base configurarion](#base-configurarion)
+  - [Basic configurarion](#basic-configurarion)
   - [Making a basic ProtectRoute](#making-a-basic-protectroute)
 - [React Toastfy](#react-toastfy)
   - [Install](#install-4)
@@ -35,10 +35,10 @@ Let's try rsrsrs
   - [Install](#install-6)
 - [Redux Persist](#redux-persist)
   - [Install](#install-7)
-  - [Basic Example](#basic-example-1)
+- [Example Redux persist + Redux saga ❤](#example-redux-persist--redux-saga-)
 - [Lodash](#lodash)
   - [Install](#install-8)
-- [Express-delay](#express-delay)
+  - [get](#get)
 
 # Instalattion
 
@@ -135,21 +135,62 @@ export default class Main extends Component {
 }
 ```
 
+Using function be like
+
+```js
+import React, { useEffect } from 'react';
+
+export default function App(){
+    //execute after render page
+    useEffect(() => {
+        console.log("i'm called on load of the page")
+    })
+
+    return <h1>React is nice!</h1>
+};
+```
+
 # ComponentDidUpdate
 
 Much like componentDidMount, this function will be called whenever there are changes in components states.
 
 ```js
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 export default class Main extends Component {
     componentDidUpdate(prevProps, prevState){
         // prevProps - Previously props of actual props
         // prevState - Previously state of actual state
-        // Use smate code here...
+        // Use smart code here...
     }
 
     render(){ return (<h1>Go hacking!</h1>) }
+};
+```
+
+Using function be like
+
+```js
+import React, { useEffect, useState } from 'react';
+
+export default function App(){
+    const [count, setCount] = useState(0);
+
+    // Will be called after render page
+    useEffect(() => {
+        console.log(count);
+    }, [count]) //Every time count is change, this function will be called
+
+    const handleUpdate = () => {
+        setCount(count + 1)
+    }
+
+    return (
+        <>
+            <h1>{count}</h1>
+            <button onClick={handleUpdate}>Change count :3</button>
+        </>
+    )
 }
 ```
 
@@ -231,7 +272,11 @@ npm i eslint @babel/eslint-plugin prettier eslint-config-prettier eslint-plugin-
 
 ## Init
 
-## Config file
+```js
+npm init @eslint/config
+```
+
+## Example config file
 
 Example .eslintrc.js
 
@@ -279,7 +324,7 @@ module.exports = {
 
 ## Prettier configuration 
 
-Example .prettierrc
+`.prettierrc`
 
 ```js
 {
@@ -302,7 +347,7 @@ npm i styled-components
 
 ## Styling with styled
 
-Example `index.js`
+`index.js`
 
 ```js
 import React from 'react';
@@ -318,7 +363,7 @@ export default AppPage(){
 }
 ```
 
-Exmaple `styled.js`
+`styled.js`
 
 ```js
 import styled from 'styled-components'
@@ -345,7 +390,7 @@ Use this is so nice! With this you can make the routes and navigation for your a
 npm i react-router-dom
 ```
 
-## Base configurarion
+## Basic configurarion
 
 Ok, this is a base for yout use the routes. But i recommend view the official doccumentation, because this change so fast @-@
 
@@ -373,7 +418,7 @@ export default function App(){
 
 > You can make any custon route, with any logic os validation :3
 
-Example `app.js`
+`app.js`
 
 ```js
 import React from 'react';
@@ -396,7 +441,7 @@ export default function App(){
 };
 ```
 
-Example `ProtectedRoute.js`
+`ProtectedRoute.js`
 
 ```js
 import React from 'react';
@@ -440,9 +485,7 @@ export default function App(){
     toast.success('Example success message!')
     toast.error('Example error message!')
 
-    return(
-        <h1>I'm a nice app from React</h1>
-    )
+    return <h1>I'm a nice app from React</h1>
 }
 ```
 
@@ -563,17 +606,245 @@ npm i redux-saga
 
 # Redux Persist
 
+If do you want store data app in the localstorage, use this is a good ideia :3
+
+i Know just a basic for this.
+
 ## Install
 
 ```js
 npm i redux-persist
 ```
 
-## Basic Example
+# Example Redux persist + Redux saga ❤ 
 
+I made the examples together to save lines ^^
 
+`app.js`
+
+```js
+import React, { useState } from 'react';
+import { Provider } from 'react-redux';
+import { persistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './store';
+import { useDispatch, useSelector } from 'react-redux';
+
+export default function App(){
+    const dispatch = useDispatch();
+    const isLoading = useSelector(state => state.auth.isLoading);
+    const isLoggedin = useSelector(state => state.auth.isLoggedIn);
+    const user = useSelector(state => state.auth.user);
+
+    const [email, setEmail] = useState('');
+    const [pass, setPass] = useState('');
+
+    const handleSubmit = (e) => {   
+        e.preventDefault();
+        dispatch(
+            actions.loginRequest({
+                email,
+                password
+            })
+        );
+    };
+
+    return (
+        <Provider store={store}>
+            <PersistGate persistor={persistor}>
+                {isLoading && 'Eternal loading :3'}
+                {user && `Welcome ${user.name}`}
+                {!isLoggedin && (
+                    <form onSubmit={handleSubmit}>
+                        <input 
+                            type='text' 
+                            value={email} 
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder='Email'
+                        />
+                        <input
+                            type='password'
+                            value={pass}
+                            onChange={e => setPass(e.target.value)}
+                            placeholder='Password'
+                        />
+                        <button type='submit'>Login</login>
+                    </form>
+                )}
+                <h1>Reduxxxxxxxxxx</h1>
+            </PersistGate>
+        </Provider>
+    )
+};
+```
+
+`store/index.js`
+
+```js
+import { persistStore } from 'redux-persist';
+import { createStore, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+
+import persistedReducers from './modules/reduxPersist';
+import rootReducer from './modules/rootReducer';
+import rootSaga from './modules/rootSaga';
+
+const sagaMiddleware = createSagaMiddleware();
+
+const store = createStore(
+    persistedReducers(rootReducer),
+    applyMiddleware(sagaMiddleware)
+);
+
+sagaMiddleware.run(rootSaga);
+
+export const persistor = persistStore(store);
+export default store;
+```
+
+`store/modules/reduxPersist`
+
+```js
+import storage from 'redux-persist/lib/storage';
+import { persistReducer } from 'redux-persist';
+
+export default (reducers) => {
+    const persistReducers = persistReducer(
+        {
+            key: 'APP-NAME',
+            storage,
+            whiteList: ['auth'],
+        },
+        reducers
+    );
+    
+    return persistReducers;
+}
+```
+
+`store/modules/rootReducer.js`
+
+```js
+import { combineReducers } from 'redux';
+
+import auth from './auth/reducer';
+
+export default combineReducers({
+    auth
+})
+```
+
+`store/modules/auth/reducer.js`
+
+```js
+import * as types from 'types'
+
+const initialState = {
+    isLoading = false;
+    isLoggedIn = false;
+    token: false;
+    user: {};
+}
+
+expor default function (state = initialState, action){
+    switch (action.type){
+        case types.LOGIN_REQUEST: {
+            const newState = {...state};
+            newState.isLoading = true;
+            return newState;
+        }
+
+        case types.LOGIN_SUCCESS: {
+            const newState = {...state};
+            newState.isLoggedIn = true;
+            newState.token = action.payload.token;
+            newState.user = action.payload.user;
+            newState.isLoading = false;
+            return newState;
+        }
+
+        case types.LOGIN_FAILURE: {
+            const newState = {...initialState};
+            return newState;
+        }
+
+        default: {
+            return state;
+        }
+    }
+}
+```
+
+`store/modules/types.js`
+
+```js
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+```
+
+`store/modules/rootSaga.js`
+
+```js
+import { all } from 'redux-saga/effects';
+
+import auth from './auth/sagas';
+
+export default function* rootSaga(){
+    return yield all([auth])
+}
+```
+
+`store/modules/auth/sagas`
+
+```js
+import { call, put, all, takeLatest } from 'redux-saga/effects';
+import * as actions from './actions';
+import axios from 'services/axios'; //configured axios
+
+function LoginRequest({payload}){
+    try{
+        const response = yield call(axios.post, '/tokens', payload);
+        yield put(actions.loginSuccess({...response.data}));
+        axios.defaults.headers.Authorization = `Bearer ${response.data.token}`;
+    } catch (error) {
+        yield put(actions.loginFailure());
+    }
+}
+
+export default all ([
+    takeLatest(types.LOGIN_REQUEST, loginRequest)
+])
+```
+
+`store/modules/auth/actions`
+
+```js
+import * as types from '../types';
+
+export function loginRequest(payload){
+    return {
+        type: types.LOGIN_REQUEST,
+        payload,
+    };
+}
+export function loginSuccess(payload){
+    return {
+        type: types.LOGIN_SUCCESS,
+        payload,
+    };
+}
+export function loginFailure(){
+    return {
+        type: types.LOGIN_FAILURE,
+    };
+}
+```
 
 # Lodash
+
+Lodash makes JavaScript easier by taking the hassle out of working with arrays, numbers, objects, strings, etc
+
+[Docs](https://lodash.com/)
 
 ## Install
 
@@ -581,8 +852,14 @@ npm i redux-persist
 npm i lodash
 ```
 
-# Express-delay
+## get
 
 ```js
-npm i express-delay
+import { get } from 'lodash';
+
+const arrayExample = [0,1,2];
+
+//data || value you want || default value if dont have value you want
+const data = get(arrayExample, '[2]', '') // 2
+const data = get(arrayExample, '[3]', '') // ''
 ```
